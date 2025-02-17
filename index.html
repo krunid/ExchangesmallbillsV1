@@ -30,7 +30,7 @@
             width: 90%; /* ปรับความกว้างตามอุปกรณ์ */
             margin: 20px;
         }
-        input[type="number"] {
+        input[type="text"] {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
@@ -155,7 +155,7 @@
 
 <div class="container">
     <h1><i class="fas fa-calculator"></i> ระบบคำนวณแลกแบงค์ย่อย</h1>
-    <input type="number" id="amount" placeholder="กรอกจำนวนเงิน" min="0" required>
+    <input type="text" id="amount" placeholder="กรอกจำนวนเงิน (เช่น 125.25)" required>
     <button onclick="calculateBills()"><i class="fas fa-coins"></i> คำนวณ</button>
 </div>
 
@@ -185,35 +185,40 @@
 
 <script>
     function calculateBills() {
-        const amount = parseInt(document.getElementById('amount').value);
+        const amountInput = document.getElementById('amount').value;
+        const amount = parseFloat(amountInput);
+
+        // ตรวจสอบว่าค่าที่กรอกเป็นตัวเลขและไม่น้อยกว่า 0
         if (isNaN(amount) || amount < 0) {
-            alert("กรุณากรอกจำนวนเงินที่ถูกต้อง");
+            alert("กรุณากรอกจำนวนเงินที่ถูกต้อง (เช่น 125.25)");
             return;
         }
 
         let remainingAmount = amount;
 
         const bills = [
-            { value: 1000, id: 'b1000', label: 'แบงค์ 1000 บาท' },
-            { value: 500, id: 'b500', label: 'แบงค์ 500 บาท' },
-            { value: 100, id: 'b100', label: 'แบงค์ 100 บาท' },
-            { value: 50, id: 'b50', label: 'แบงค์ 50 บาท' },
-            { value: 20, id: 'b20', label: 'แบงค์ 20 บาท' },
-            { value: 5, id: 'b5', label: 'เหรียญ 5 บาท' },
-            { value: 1, id: 'b1', label: 'เหรียญ 1 บาท' }
+            { value: 1000, label: 'แบงค์ 1000 บาท' },
+            { value: 500, label: 'แบงค์ 500 บาท' },
+            { value: 100, label: 'แบงค์ 100 บาท' },
+            { value: 50, label: 'แบงค์ 50 บาท' },
+            { value: 20, label: 'แบงค์ 20 บาท' },
+            { value: 5, label: 'เหรียญ 5 บาท' },
+            { value: 1, label: 'เหรียญ 1 บาท' },
+            { value: 0.50, label: 'เหรียญ 50 สตางค์' },
+            { value: 0.25, label: 'เหรียญ 25 สตางค์' }
         ];
 
         let resultHTML = '';
 
         bills.forEach(bill => {
             const count = Math.floor(remainingAmount / bill.value);
-            remainingAmount %= bill.value;
+            remainingAmount = parseFloat((remainingAmount % bill.value).toFixed(2));
 
             if (count > 0) {
                 resultHTML += `
                     <tr>
                         <td>${bill.label}</td>
-                        <td>${count} ${bill.value >= 20 ? 'ใบ' : 'เหรียญ'}</td>
+                        <td>${count} ${bill.value >= 1 ? 'ใบ' : 'เหรียญ'}</td>
                     </tr>
                 `;
             }
